@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
         std::cout << itr << std::endl;
     }
 
-    Interpreter i(t);
+    Interpreter i(t.AllTokens());
 
     return 0;
 }

@@ -2,19 +2,17 @@
 
 cmake_minimum_required(VERSION 3.3)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+project(subcmake)
 
-get_filename_component(NAME ${CMAKE_SOURCE_DIR} NAME)
-project(${NAME}) #another comment
-#comment1
-#comment2
+add_executable(subcmake
+    program.cpp
+    tokenizer.cpp
+    tokenizer.h
+    interpreter.cpp
+    interpreter.h
+    )
 
-#comment3
-
-include(files.cmake)
-
-add_executable(${NAME} ${FILES})
-
-if(${NAME} EQUAL "test")
-    add_test(${NAME} ${FILES})
-endif()
+target_compile_features(subcmake
+    PRIVATE cxx_nullptr
+    PRIVATE cxx_range_for
+    )

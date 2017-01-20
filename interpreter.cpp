@@ -4,16 +4,10 @@
 #include <stdexcept>
 #include <algorithm>
 
-InterpreterContext::InterpreterContext(Tokenizer &tokenizer)
-    : _tokenizer(tokenizer)
+InterpreterContext::InterpreterContext()
 { }
 
 InterpreterContext::~InterpreterContext() { }
-
-Tokenizer& InterpreterContext::tokenizer()
-{
-    return this->_tokenizer;
-}
 
 std::string& InterpreterContext::variable(const std::string& name)
 {
@@ -30,10 +24,28 @@ void InterpreterContext::setVariable(const std::string& name, const std::string&
         this->_variables[name] = value;
 }
 
-Interpreter::Interpreter(Tokenizer& t)
+std::string InterpreterContext::extractVariableValue(const std::string& token)
 {
-    InterpreterContext context(t);
-    auto itr = t.AllTokens().cbegin();
+    if (token[0] == '$' && token[1] == '{' && token[token.size()-1] == '}')
+    {
+        return this->variable(token.substr(2, token.size() - 3));
+    }
+
+    if (token[0] == '\"' && token[token.size()-1] == '\"')
+    {
+        // TODO: replace all variables in this string token with their values
+    }
+
+    return token;
+}
+
+
+
+
+Interpreter::Interpreter(const std::vector<std::string>& tokens)
+{
+    InterpreterContext context;
+    auto itr = tokens.cbegin();
     while (*itr != "")
     {
         auto i = Interpreter::RunInterpreter(context, itr);
@@ -171,4 +183,8 @@ SetCommand::~SetCommand()
 { }
 
 void SetCommand::Run(InterpreterContext& context, std::vector<std::string>::const_iterator& itr)
-{ }
+{
+    if (this->_parameters.size() < 2) throw std::runtime_error("too few arguments, need a variable name and a value");
+
+    context.setVariable(context.extractVariableValue(this->_parameters[0]), this->_parameters[1]);
+}
